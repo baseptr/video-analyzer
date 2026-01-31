@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: video-analyzer-postgres
+    environment:
+      POSTGRES_DB: video_analyzer
+      POSTGRES_USER: video_user
+      POSTGRES_PASSWORD: video_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U video_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: video-analyzer-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: video-analyzer-api
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_analyzer
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+  # Frontend - React UI
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: video-analyzer-ui
+    ports:
+      - "3001:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
