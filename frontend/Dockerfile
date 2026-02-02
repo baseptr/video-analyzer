@@ -23,11 +23,11 @@ FROM nginx:alpine
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx config template
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy nginx config
+COPY nginx.conf /etc/nginx/nginx.conf.template
 
-# Default port (Railway overrides with $PORT)
+# Default port
 ENV PORT=80
 
-# nginx docker image automatically substitutes env vars in templates
-CMD ["nginx", "-g", "daemon off;"]
+# Replace NGINX_PORT with actual PORT and start nginx
+CMD sh -c "sed 's/NGINX_PORT/'\"$PORT\"'/g' /etc/nginx/nginx.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
