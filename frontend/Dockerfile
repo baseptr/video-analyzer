@@ -26,8 +26,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx config template
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Expose port (Railway sets $PORT)
-EXPOSE 80
+# Default port (Railway overrides with $PORT)
+ENV PORT=80
 
 # nginx docker image automatically substitutes env vars in templates
 CMD ["nginx", "-g", "daemon off;"]
