@@ -23,11 +23,11 @@ FROM nginx:alpine
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx config template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Expose port
+# Expose port (Railway sets $PORT)
 EXPOSE 80
 
-# Start nginx
+# nginx docker image automatically substitutes env vars in templates
 CMD ["nginx", "-g", "daemon off;"]
