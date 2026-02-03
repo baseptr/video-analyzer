@@ -85,6 +85,8 @@ class StorageAdapter:
     def _upload_to_local(self, file_content: bytes, filename: str) -> str:
         """Upload to local filesystem."""
         file_path = os.path.join(LOCAL_STORAGE_PATH, filename)
+        # Create parent directories if they don't exist
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "wb") as f:
             f.write(file_content)
         logger.info(f"Video saved locally: {filename}")
