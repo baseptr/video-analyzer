@@ -12,7 +12,7 @@ from database.base import get_db
 from database.models import User, Video
 from database.schemas import (
     VideoResponse, VideoDetailResponse, VideoCreate,
-    UploadUrlResponse, UploadCompleteRequest, PaginatedResponse
+    UploadUrlResponse, UploadCompleteRequest, PaginatedVideoResponse
 )
 from api.dependencies import get_current_user
 from utils.logger import setup_logger
@@ -157,7 +157,7 @@ async def complete_upload(
     return db_video
 
 
-@router.get("", response_model=PaginatedResponse)
+@router.get("", response_model=PaginatedVideoResponse)
 async def list_videos(
     skip: int = 0,
     limit: int = 20,

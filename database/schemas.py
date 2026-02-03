@@ -275,3 +275,18 @@ class PaginatedResponse(BaseModel):
     skip: int
     limit: int
     has_more: bool
+
+    class Config:
+        from_attributes = True
+
+
+class PaginatedVideoResponse(BaseModel):
+    """Paginated response for videos."""
+    items: List[VideoResponse]
+    total: int
+    skip: int
+    limit: int
+    has_more: bool
+
+    class Config:
+        from_attributes = True
