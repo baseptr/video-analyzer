@@ -6,6 +6,7 @@ from typing import Optional, List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from database.base import get_db
 from database.models import User, Video, PatternPerformance
@@ -196,7 +197,7 @@ async def get_benchmark_stats(
     # Get hook type distribution
     hook_types = db.query(
         Video.hook_type,
-        db.func.count(Video.id).label('count')
+        func.count(Video.id).label('count')
     ).filter(
         Video.is_benchmark == True,
         Video.analysis_status == 'completed'
@@ -205,7 +206,7 @@ async def get_benchmark_stats(
     # Get emotion distribution
     emotions = db.query(
         Video.emotion,
-        db.func.count(Video.id).label('count')
+        func.count(Video.id).label('count')
     ).filter(
         Video.is_benchmark == True,
         Video.analysis_status == 'completed'
@@ -213,7 +214,7 @@ async def get_benchmark_stats(
 
     # Get average viral score
     avg_viral = db.query(
-        db.func.avg(Video.viral_probability)
+        func.avg(Video.viral_probability)
     ).filter(
         Video.is_benchmark == True,
         Video.analysis_status == 'completed'
